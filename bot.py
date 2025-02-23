@@ -1,7 +1,11 @@
+import asyncio
 import os
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
+import nest_asyncio  # 🛠️ Fix for nested event loops
+
+nest_asyncio.apply()  # ✅ Allow nested async loops
 
 load_dotenv()
 
@@ -26,9 +30,8 @@ async def link_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = "You need to provide the unique code.\nExample: /link unique_code"
         await update.message.reply_text(response)
 
-def main():
-    # Build bot
-    print('Starting bot... ')
+async def run_bot():
+    print('Starting bot...')
     app = Application.builder().token(access_token).build()
 
     # Handle commands
@@ -36,9 +39,13 @@ def main():
     app.add_handler(CommandHandler('help', help_command))
     app.add_handler(CommandHandler('link', link_command))
 
-    print('Polling... ')
-    app.run_polling(poll_interval=3)
+    print('Polling...')
+    await app.run_polling(poll_interval=3, stop_signals=None)  # 🔥 Prevents loop closing issues
 
+def main():
+    loop = asyncio.get_event_loop()  # ✅ Get the active event loop
+    loop.create_task(run_bot())  # ✅ Run bot as a background task
+    loop.run_forever()  # 🔥 Keeps the bot running without conflicts
 
 if __name__ == "__main__":
     main()
