@@ -1,9 +1,10 @@
+import streamlit as st
 import asyncio
 import os
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
-import nest_asyncio  # 🛠️ Fix for nested event loops
+import nest_asyncio
 
 nest_asyncio.apply()  # ✅ Allow nested async loops
 
@@ -46,6 +47,8 @@ def main():
     loop = asyncio.get_event_loop()  # ✅ Get the active event loop
     loop.create_task(run_bot())  # ✅ Run bot as a background task
     loop.run_forever()  # 🔥 Keeps the bot running without conflicts
+    st.title("Eventee Telegram Bot 🎉")
+    st.write("Bot is running automatically...")
 
 if __name__ == "__main__":
     main()
